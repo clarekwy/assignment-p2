@@ -23,3 +23,17 @@ def initialize_database() -> None:
             )
             """
         )
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS budgets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                category TEXT NOT NULL,
+                month TEXT NOT NULL,
+                limit_amount REAL NOT NULL CHECK (limit_amount > 0),
+                UNIQUE (category, month)
+            )
+            """
+        )
+        
+        
+        

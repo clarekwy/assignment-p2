@@ -36,3 +36,38 @@ def list_expenses() -> list[Expense]:
         ).fetchall()
 
     return [Expense(**dict(row)) for row in rows]
+
+
+def create_budget(budget: BudgetCreate) -> Budget:
+    with get_connection() as connection:
+        cursor = connection.execute(
+            """
+            INSERT INTO budgets (category, month, limit_amount)
+            VALUES (?, ?, ?)
+            """,
+            (budget.category, budget.month, budget.limit_amount),
+        )
+
+        row = connection.execute(
+            """
+            SELECT id, category, month, limit_amount
+            FROM budgets
+            WHERE id = ?
+            """,
+            (cursor.lastrowid,),
+        ).fetchone()
+
+    return Budget(**dict(row))
+
+
+def list_budgets() -> list[Budget]:
+    with get_connection() as connection:
+        rows = connection.execute(
+            """
+            SELECT id, category, month, limit_amount
+            FROM budgets
+            ORDER BY id
+            """
+        ).fetchall()
+
+    return [Budget(**dict(row)) for row in rows]

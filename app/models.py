@@ -9,3 +9,11 @@ class Expense:
     amount: float
     description: str | None
     created_at: datetime
+
+
+@dataclass
+class Budget:
+    id: int
+    category: str
+    month: str
+    limit_amount: float
