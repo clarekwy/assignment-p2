@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -45,7 +46,7 @@ class BudgetCreate(BaseModel):
         if value not in KNOWN_CATEGORIES:
             raise ValueError(f"category must be one of: {sorted(KNOWN_CATEGORIES)}")
         return value
-        
+
     @field_validator("month")
     @classmethod
     def validate_month_format(cls, value: str) -> str:
@@ -69,3 +70,12 @@ class BudgetRead(BaseModel):
     limit_amount: float
     actual_spent: float
     usage_ratio: float
+
+
+    class BudgetAlert(BaseModel):
+    category: str
+    month: str
+    limit_amount: float
+    actual_spent: float
+    usage_percentage: float
+    status: Literal["warning", "overspent"]

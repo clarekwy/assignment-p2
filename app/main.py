@@ -7,13 +7,18 @@ from app.database import initialize_database
 from app.repositories import create_expense, list_expenses
 from app.schemas import (
     MONTH_PATTERN,
+    BudgetAlert,
     BudgetCreate,
     BudgetRead,
     BudgetStatus,
     ExpenseCreate,
     ExpenseRead,
 )
-from app.services import set_monthly_budget
+from app.services import (
+    get_budget_alerts_for_month,
+    get_budget_status_for_month,
+    set_monthly_budget,
+)
 
 
 @asynccontextmanager
@@ -49,3 +54,10 @@ def get_budget_summary(
     month: Annotated[str, Path(pattern=MONTH_PATTERN.pattern)],
 ) -> list[BudgetStatus]:
     return get_budget_status_for_month(month)
+
+
+@app.get("/alerts/{month}", response_model=list[BudgetAlert])
+def get_budget_alerts(
+    month: Annotated[str, Path(pattern=MONTH_PATTERN.pattern)],
+) -> list[BudgetAlert]:
+    return get_budget_alerts_for_month(month)

@@ -49,3 +49,28 @@ def get_overspent_categories(month: str) -> list[BudgetStatus]:
         for status in get_budget_status_for_month(month)
         if status.usage_ratio >= OVERSPENT_THRESHOLD
     ]
+
+
+def get_budget_alerts_for_month(month: str) -> list[BudgetAlert]:
+    alerts: list[BudgetAlert] = []
+
+    for status in get_budget_status_for_month(month):
+        if status.usage_ratio < WARNING_THRESHOLD:
+            continue
+
+        alert_status: str = (
+            "overspent" if status.usage_ratio >= OVERSPENT_THRESHOLD else "warning"
+        )
+
+        alerts.append(
+            BudgetAlert(
+                category=status.category,
+                month=status.month,
+                limit_amount=status.limit_amount,
+                actual_spent=status.actual_spent,
+                usage_percentage=status.usage_ratio * 100,
+                status=alert_status,
+            )
+        )
+
+    return alerts
