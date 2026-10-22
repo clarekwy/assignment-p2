@@ -42,3 +42,11 @@ class BudgetRead(BaseModel):
     category: str
     month: str
     limit_amount: float
+
+
+    class BudgetStatus(BaseModel):
+    category: str
+    month: str
+    limit_amount: float
+    actual_spent: float
+    usage_ratio: float

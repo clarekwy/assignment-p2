@@ -71,3 +71,33 @@ def list_budgets() -> list[Budget]:
         ).fetchall()
 
     return [Budget(**dict(row)) for row in rows]
+
+
+    def list_budgets_for_month(month: str) -> list[Budget]:
+    with get_connection() as connection:
+        rows = connection.execute(
+            """
+            SELECT id, category, month, limit_amount
+            FROM budgets
+            WHERE month = ?
+            ORDER BY category
+            """,
+            (month,),
+        ).fetchall()
+
+    return [Budget(**dict(row)) for row in rows]
+
+
+def sum_expenses_by_category_for_month(month: str) -> dict[str, float]:
+    with get_connection() as connection:
+        rows = connection.execute(
+            """
+            SELECT category, SUM(amount) AS total
+            FROM expenses
+            WHERE strftime('%Y-%m', created_at) = ?
+            GROUP BY category
+            """,
+            (month,),
+        ).fetchall()
+
+    return {row["category"]: row["total"] for row in rows}
