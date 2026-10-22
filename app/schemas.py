@@ -5,6 +5,18 @@ from pydantic import BaseModel, ConfigDict, Field
 
 MONTH_PATTERN = re.compile(r"^\d{4}-(0[1-9]|1[0-2])$")
 
+KNOWN_CATEGORIES = {
+    "food",
+    "transport",
+    "travel",
+    "entertainment",
+    "utilities",
+    "shopping",
+    "health",
+    "housing",
+    "other",
+}
+
 
 class ExpenseCreate(BaseModel):
     category: str = Field(min_length=1, max_length=100)
@@ -27,6 +39,13 @@ class BudgetCreate(BaseModel):
     month: str
     limit_amount: float = Field(gt=0)
 
+    @field_validator("category")
+    @classmethod
+    def validate_known_category(cls, value: str) -> str:
+        if value not in KNOWN_CATEGORIES:
+            raise ValueError(f"category must be one of: {sorted(KNOWN_CATEGORIES)}")
+        return value
+        
     @field_validator("month")
     @classmethod
     def validate_month_format(cls, value: str) -> str:

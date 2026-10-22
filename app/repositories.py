@@ -73,7 +73,30 @@ def list_budgets() -> list[Budget]:
     return [Budget(**dict(row)) for row in rows]
 
 
-    def list_budgets_for_month(month: str) -> list[Budget]:
+def upsert_budget(budget: BudgetCreate) -> Budget:
+    with get_connection() as connection:
+        connection.execute(
+            """
+            INSERT INTO budgets (category, month, limit_amount)
+            VALUES (?, ?, ?)
+            ON CONFLICT (category, month) DO UPDATE SET limit_amount = excluded.limit_amount
+            """,
+            (budget.category, budget.month, budget.limit_amount),
+        )
+
+        row = connection.execute(
+            """
+            SELECT id, category, month, limit_amount
+            FROM budgets
+            WHERE category = ? AND month = ?
+            """,
+            (budget.category, budget.month),
+        ).fetchone()
+
+    return Budget(**dict(row))
+
+
+def list_budgets_for_month(month: str) -> list[Budget]:
     with get_connection() as connection:
         rows = connection.execute(
             """

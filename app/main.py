@@ -5,6 +5,7 @@ from fastapi import FastAPI, status
 from app.database import initialize_database
 from app.repositories import create_expense, list_expenses
 from app.schemas import ExpenseCreate, ExpenseRead
+from app.services import set_monthly_budget
 
 
 @asynccontextmanager
@@ -28,3 +29,8 @@ def add_expense(expense: ExpenseCreate) -> ExpenseRead:
 @app.get("/expenses", response_model=list[ExpenseRead])
 def get_expenses() -> list[ExpenseRead]:
     return [ExpenseRead.model_validate(expense) for expense in list_expenses()]
+
+
+@app.post("/budgets", response_model=BudgetRead, status_code=status.HTTP_200_OK)
+def set_budget(budget: BudgetCreate) -> BudgetRead:
+    return BudgetRead.model_validate(set_monthly_budget(budget))

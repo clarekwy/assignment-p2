@@ -11,7 +11,7 @@ OVERSPENT_THRESHOLD = 1.00
 
 
 def set_monthly_budget(budget: BudgetCreate) -> Budget:
-    return create_budget(budget)
+    return upsert_budget(budget)
 
 
 def get_budget_status_for_month(month: str) -> list[BudgetStatus]:
