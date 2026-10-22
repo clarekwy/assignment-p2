@@ -1,10 +1,18 @@
 from contextlib import asynccontextmanager
+from typing import Annotated
 
 from fastapi import FastAPI, status
 
 from app.database import initialize_database
 from app.repositories import create_expense, list_expenses
-from app.schemas import ExpenseCreate, ExpenseRead
+from app.schemas import (
+    MONTH_PATTERN,
+    BudgetCreate,
+    BudgetRead,
+    BudgetStatus,
+    ExpenseCreate,
+    ExpenseRead,
+)
 from app.services import set_monthly_budget
 
 
@@ -34,3 +42,10 @@ def get_expenses() -> list[ExpenseRead]:
 @app.post("/budgets", response_model=BudgetRead, status_code=status.HTTP_200_OK)
 def set_budget(budget: BudgetCreate) -> BudgetRead:
     return BudgetRead.model_validate(set_monthly_budget(budget))
+
+
+@app.get("/budgets/{month}", response_model=list[BudgetStatus])
+def get_budget_summary(
+    month: Annotated[str, Path(pattern=MONTH_PATTERN.pattern)],
+) -> list[BudgetStatus]:
+    return get_budget_status_for_month(month)
